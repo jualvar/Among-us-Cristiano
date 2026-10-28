@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: el-arca-de-noe-bible-us
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
