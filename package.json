@@ -1,0 +1,23 @@
+{
+  "name": "el-arca-de-noe-bible-us",
+  "version": "1.0.0",
+  "description": "El Arca de Noé (Bible Us) - Juego multijugador cristiano en tiempo real con Socket.io",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "bible-us",
+    "el-arca-de-noe",
+    "among-us",
+    "multiplayer",
+    "socket.io",
+    "christian-game"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.3.0",
+    "socket.io": "^4.8.4"
+  }
+}
