@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a2a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>El Arca de Noé - Bible Us</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/nipplejs.min.js"></script>
+</head>
+<body>
+
+  <!-- FONDO CINEMATOGRÁFICO DEL ARCA EN MAR TEMPESTUOSO -->
+  <canvas id="stormCanvas"></canvas>
+
+  <!-- ROTATE DEVICE WARNING (FORCED HORIZONTAL ON MOBILE) -->
+  <div id="rotateDeviceOverlay">
+      <div class="rotate-icon-wrapper">
+          <div class="rotate-phone-anim">📱</div>
+      </div>
+      <h2>GIRA TU DISPOSITIVO</h2>
+      <p>El Arca de Noé requiere pantalla en modo <b>Horizontal (Landscape)</b> para una experiencia inmersiva completa.</p>
+  </div>
+
+  <!-- DESTELLO DE ALERTA DE EMERGENCIA -->
+  <div id="emergencyFlashOverlay"></div>
+
+  <!-- CELEBRACIÓN DE TAREA COMPLETADA -->
+  <div id="taskCompleteBanner">✨ ¡TAREA BÍBLICA COMPLETADA! ✨</div>
+
+  <!-- LOBBY SCREEN -->
+  <div id="lobbyScreen" class="screen active">
+      <div class="lobby-box">
+          <div class="ark-badge-icon">🚢</div>
+          <h1>EL ARCA DE NOÉ</h1>
+          <p class="subtitle">BIBLE US • MULTIJUGADOR CRISTIANO</p>
+          <input type="text" id="playerNameInput" placeholder="Ingresa tu nombre bíblico" maxlength="12" autofocus>
+          
+          <div class="lobby-action-buttons">
+              <button id="btnCreateRoom" class="btn-primary">CREAR SALA</button>
+              <div class="join-row">
+                  <input type="text" id="roomCodeInput" placeholder="CÓDIGO" maxlength="4">
+                  <button id="btnJoinRoom" class="btn-success">UNIRSE</button>
+              </div>
+          </div>
+          <p class="lobby-tip">💡 En celulares, el juego se adaptará automáticamente a pantalla completa.</p>
+      </div>
+  </div>
+
+  <!-- WAITING ROOM SCREEN (PERFECTAMENTE CENTRADO) -->
+  <div id="waitingRoomScreen" class="screen" style="display:none;">
+      <div class="lobby-box waiting-box">
+          <h2>SALA DE ESPERA</h2>
+          <div class="code-container">
+              <span class="code-label">CÓDIGO DE LA SALA:</span>
+              <h3 id="roomCodeDisplay">XXXX</h3>
+          </div>
+          <p class="share-hint">Comparte este código con tus hermanos y amigos para jugar juntos</p>
+          <div class="connected-badge">
+              Tripulantes conectados: <span id="playerCount">0</span> / 10
+          </div>
+          <div id="playerList" class="player-list-scroll"></div>
+          <p id="waitingMessage">Esperando al anfitrión para iniciar la travesía...</p>
+          <button id="btnStartGame" style="display:none;" class="btn-success btn-large">ZARPAR (INICIAR PARTIDA)</button>
+      </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="gameScreen" class="screen">
+      <!-- TOP ARK HUD -->
+      <div id="topArkHud">
+          <div class="ark-header-bar">
+              <span class="ark-title-tag">🚢 EL ARCA DE NOÉ</span>
+              <div class="task-bar-segments" id="taskSegments">
+                  <div id="taskFill" style="width: 0%;"></div>
+                  <div class="segment-ticks"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              </div>
+          </div>
+          <div class="task-checklist-box" id="taskChecklist">
+              <div class="checklist-title">TAREAS BÍBLICAS PENDIENTES:</div>
+              <ul id="taskListUI">
+                  <li id="chk-alimentar"><span class="box">☐</span> Alimentar animales</li>
+                  <li id="chk-achicar"><span class="box">☐</span> Achicar agua de la sentina</li>
+                  <li id="chk-timon"><span class="box">☐</span> Ajustar timón al Monte Ararat</li>
+                  <li id="chk-cables_up"><span class="box">☐</span> Conectar cordones sagrados</li>
+                  <li id="chk-cables_down"><span class="box">☐</span> Reparar farol de proa</li>
+                  <li id="chk-provisiones"><span class="box">☐</span> Clasificar trigo y aceite</li>
+                  <li id="chk-escanear"><span class="box">☐</span> Inspección de cuarentena</li>
+                  <li id="chk-astrolabio"><span class="box">☐</span> Encontrar diferencias del Arca</li>
+                  <li id="chk-limpiar_jaulas"><span class="box">☐</span> Cuidar palomas mensajeras</li>
+                  <li id="chk-limpiar_mesas"><span class="box">☐</span> Pan de la proposición</li>
+                  <li id="chk-vaciar_basura"><span class="box">☐</span> Vaciar desechos al mar</li>
+                  <li id="chk-orar"><span class="box">☐</span> Rompecabezas del Pacto (Capilla)</li>
+                  <li id="chk-rollos"><span class="box">☐</span> Armar versículo de los Salmos</li>
+              </ul>
+          </div>
+      </div>
+
+      <!-- TOP RIGHT HUD CONTROLS -->
+      <div id="topRightHud">
+          <button id="btnMapOverview" title="Plano del Arca (M)" class="hud-circle-btn">🗺️</button>
+          <button id="btnToggleAudio" title="Música y Sonido" class="hud-circle-btn">🔊</button>
+          <button id="btnFullscreen" title="Pantalla Completa" class="hud-circle-btn">⛶</button>
+      </div>
+
+      <!-- BOTTOM LEFT STATUS UI -->
+      <div id="ui">
+          <h1 id="roleDisplay">Cargando Rol...</h1>
+          <p id="statusDisplay">Vivo</p>
+          <p id="controls" class="desktop-only">WASD/Flechas: Moverse | ESPACIO/E: Tarea / Usar / Botón | V: Ventilación | R: Reportar | M: Mapa</p>
+      </div>
+
+      <!-- FULL ARK MAP MODAL -->
+      <div id="mapModal" class="modal" style="display:none;">
+          <div class="map-modal-content">
+              <div class="map-modal-header">
+                  <h2>PLANO GENERAL: EL ARCA DE NOÉ</h2>
+                  <button id="btnCloseMap">✕</button>
+              </div>
+              <canvas id="overviewMapCanvas" width="800" height="500"></canvas>
+              <p class="map-tip">Pulsa M o la 'X' para cerrar el mapa</p>
+          </div>
+      </div>
+
+      <!-- EMERGENCY MEETING MODAL -->
+      <div id="meetingModal" class="modal" style="display:none;">
+          <div class="modal-content meeting-content">
+              <h2>🔔 REUNIÓN DE EMERGENCIA</h2>
+              <p id="meetingStatus" class="meeting-sub">¡Hermanos, deliberen y expulsen al traidor!</p>
+              <div id="voiceChatStatus" style="color: #facc15; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;">Chat de voz activo entre tripulantes vivos</div>
+              <div id="votingArea" class="voting-grid"></div>
+              <p id="voteTimer">Tiempo restante de deliberación: 35s</p>
+          </div>
+      </div>
+
+      <!-- TASK MODAL (MULTI-MINIGAMES) -->
+      <div id="taskModal" class="modal" style="display:none;">
+          <div class="modal-content task-content">
+              <button id="btnCloseTask" title="Cerrar Tarea">✕</button>
+              <div id="taskQuestion">Cargando Tarea...</div>
+              <div id="taskAnswers"></div>
+          </div>
+      </div>
+
+      <!-- MAIN GAME CANVAS -->
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- MOBILE TOUCH CONTROLS -->
+      <div id="mobileControls">
+          <div id="joystickZone"></div>
+          <div class="action-area">
+              <button id="btnAction" class="action-btn">USAR</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- GLOBAL NOTIFICATIONS -->
+  <div id="notificationContainer"></div>
+
+  <!-- AUDIO DE FONDO: PISTA EN PIANO DE SUBLIME GRACIA -->
+  <audio id="pianoAudio" src="/sublime_gracia_piano.ogg" loop preload="auto"></audio>
+
+  <!-- PANTALLA DE VICTORIA O DERROTA COMPLETA (GAME OVER) -->
+  <div id="gameOverScreen" style="display: none;">
+      <div class="game-over-card" id="goCard">
+          <div id="goIcon" style="font-size: 3.8em; margin-bottom: 6px;">🏆✨</div>
+          <h1 id="goTitle">¡VICTORIA DE LOS FIELES!</h1>
+          <h2 id="goWinner">Los Fieles Triunfaron</h2>
+          <p id="goReason" style="font-size: 1.15em; color: #e2e8f0; margin: 10px 0;">¡Todas las tareas bíblicas completadas!</p>
+          
+          <div id="goImposterBox" style="background: rgba(0, 0, 0, 0.45); padding: 10px 16px; border-radius: 12px; margin: 12px 0; border: 1px solid rgba(255,255,255,0.15);">
+              <span style="color: #94a3b8; font-size: 0.9em;">Judas de la travesía:</span>
+              <div id="goImposterName" style="color: #ef4444; font-weight: bold; font-size: 1.25em;">--</div>
+          </div>
+
+          <p id="goCountdownText" style="margin-top: 10px; font-size: 0.9em; color: #94a3b8;">Continuando a la sala en <span id="goCountdownNum" style="font-weight: bold; color: #facc15;">10</span>s...</p>
+          <button id="btnReturnToLobby" class="btn-primary" style="margin-top: 14px; padding: 14px 28px; font-size: 1.15em; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+              <span>🚢 CONTINUAR A LA SALA DE ESPERA</span>
+          </button>
+      </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/audio.js"></script>
+  <script src="/tasks.js"></script>
+  <script src="/storm_bg.js"></script>
+  <script src="/game.js"></script>
+  <script src="/voice.js"></script>
+</body>
+</html>
